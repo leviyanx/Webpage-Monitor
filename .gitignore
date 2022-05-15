@@ -1,0 +1,11 @@
+# custom settings
+sender-settings.json
+receiver-settings.json
+monitor-settings.json
+
+# original script
+website-monitor.ipynb
+
+.DS_Store
+
+__pycache__
