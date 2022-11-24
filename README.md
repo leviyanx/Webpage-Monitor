@@ -3,7 +3,7 @@
 
 ## Requirement
 
-Three file:
+Three files:
 
 - receiver-settings.json
 - sender-settings.json
