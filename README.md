@@ -1,5 +1,5 @@
 
-# Website Monitor
+# Webpage Monitor
 
 ### Example
 
@@ -7,13 +7,15 @@
 
 ### Requirement
 
-Three files:
+Python@3.10
+
+Setting files
 
 - receiver-settings.json
 - sender-settings.json
 - monitor-settings.json
 
-#### receiver-settings.json
+##### receiver-settings.json
 
 This file is used to set receiver mail address.
 
@@ -25,7 +27,7 @@ Example
 }
 ```
 
-#### sender-settings.json
+##### sender-settings.json
 
 This file is used to set a mail account that sends mail to receiver.
 
@@ -38,7 +40,7 @@ Example
 }
 ```
 
-#### monitor-settings.json
+##### monitor-settings.json
 
 This file is used to set webpage that you want to monitor.
 
