@@ -6,33 +6,34 @@ from email.header import Header
 
 
 class EmailUtil:
-    # files store sender and receiver information
-    sender_settings_file = ""
-    receiver_settings_file = ""
+    """email util class
 
-    # sender's information
-    from_address = ''  # sender email address
-    from_address_pwd = ""  # qq mail passcode
+    Attributes: only one attribute, the sender email address and password
+    """
 
-    # receiver's information
-    to_address = ""  # receiver email address
+    def __init__(self, sender_settings_file):
+        from_address, from_address_passwd = self.get_sender_settings(sender_settings_file)
+        self.from_address = from_address
+        self.from_address_pwd = from_address_passwd
 
-    def __init__(self, sender_settings_file, receiver_settings_file):
-        # read custom settings from sender
+    @staticmethod
+    def get_sender_settings(sender_settings_file):
+        """get sender email address and password from json file"""
         with open(sender_settings_file) as json_file:
             sender_info = json.load(json_file)
 
-            self.from_address = sender_info['mailSender']
-            self.from_address_pwd = sender_info['mailSenderPassword']
+            return sender_info['mailSender'], sender_info['mailSenderPassword']
 
-        # read custom setting from receiver
+    @staticmethod
+    def get_receiver_email(receiver_settings_file):
+        """get receiver email address from json file"""
         with open(receiver_settings_file) as json_file:
             receiver_info = json.load(json_file)
 
-            self.to_address = receiver_info['mailReceiver']
+            return receiver_info['mailReceiver']
 
-    def email_me(self, subject, send_content):
-        """email me the given message"""
+    def email_specified_user(self, subject, send_content, to_address):
+        """email specified user the given message"""
 
         # ssl login
         host_server = 'smtp.qq.com'  # email use qq mail
@@ -42,15 +43,13 @@ class EmailUtil:
         smtp.ehlo(host_server)
         smtp.login(self.from_address, self.from_address_pwd)
 
-        to_addrs = [self.to_address]
-
         # construct message
         msg = EmailMessage()
         msg = MIMEText(send_content, "plain", 'utf-8')
         msg['From'] = self.from_address
-        msg['To'] = self.to_address
+        msg['To'] = to_address
         msg['Subject'] = Header(subject, 'utf-8')
 
-        smtp.sendmail(self.from_address, to_addrs, msg.as_string())
+        smtp.sendmail(self.from_address, to_address, msg.as_string())
 
         smtp.quit()

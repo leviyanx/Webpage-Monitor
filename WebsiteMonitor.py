@@ -9,7 +9,10 @@ from EmailUtil import EmailUtil
 
 
 class WebsiteMonitor:
-    """ This class is used to monitor changes in a website"""
+    """ This class is used to monitor changes in a website
+
+    Attributes: the target URL, time interval to detect changes, and headers (only related to monitor action)
+    """
 
     # default monitor settings
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -31,9 +34,10 @@ class WebsiteMonitor:
         :param sender_settings_file: file stores sender's settings
         :param receiver_settings_file: file stores receiver's information
         """
-        emailUtil = EmailUtil(sender_settings_file, receiver_settings_file)
-        PrevVersion = ""
-        FirstRun = True
+        email_util = EmailUtil(sender_settings_file)
+        receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
+        prev_version = ""
+        first_run = True
         while True:
             try:
                 # download the page
@@ -46,15 +50,15 @@ class WebsiteMonitor:
                     script.extract()
                 soup = soup.get_text()
                 # compare the page text to the previous version
-                if PrevVersion != soup:
+                if prev_version != soup:
                     # on the first run - just memorize the page
-                    if FirstRun == True:
-                        PrevVersion = soup
-                        FirstRun = False
+                    if first_run == True:
+                        prev_version = soup
+                        first_run = False
                         print("Start Monitoring " + self.url + "" + str(datetime.now()))
                     else:
                         print("Changes detected at: " + str(datetime.now()))
-                        OldPage = PrevVersion.splitlines()
+                        OldPage = prev_version.splitlines()
                         NewPage = soup.splitlines()
                         # compare versions and highlight changes using difflib
                         # d = difflib.Differ()
@@ -65,11 +69,11 @@ class WebsiteMonitor:
                         # print and email me the changes
                         print(out_text)
                         subject = "Something new in your follow website" + self.url
-                        emailUtil.email_me(subject, out_text)
+                        email_util.email_specified_user(subject, out_text, receiver_address)
 
                         OldPage = NewPage
                         # print ('\n'.join(diff))
-                        PrevVersion = soup
+                        prev_version = soup
 
                 # this is used for testing
                 else:
@@ -83,7 +87,7 @@ class WebsiteMonitor:
                 # email receiver the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
                 send_content = self.url + '\n' + e
-                emailUtil.email_me(subject, send_content)
+                email_util.email_specified_user(subject, send_content, receiver_address)
 
                 # quit the program
                 break
