@@ -6,7 +6,7 @@
 - You can monitor the specified webpage, if the webpage is updated, send a notification to the specified email address. The notification email contains the changes.
 - You can specify the interval of monitoring.
 - You can set sender and receiver of the notification email.
-- You **don't need to restart** the script **after changing** the settings in any setting file. (i.e. Once your change settings in the setting file, the script will automatically apply the settings.)
+- You **don't need to restart the script after changing the settings** in any setting file. (Once your change settings in the setting file, the script will automatically apply the new settings.)
 
 ### Example
 
