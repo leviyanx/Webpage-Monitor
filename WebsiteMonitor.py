@@ -11,19 +11,14 @@ from EmailUtil import EmailUtil
 class WebsiteMonitor:
     """ This class is used to monitor changes in a website
 
-    Attributes: the target URL, time interval to detect changes, and headers (only related to monitor action)
+    Attributes: only one attribute, the headers to act like a browser
     """
 
-    # default monitor settings
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
-                             'Chrome/39.0.2171.95 Safari/537.36'}  # act like a browser
-    url = "https://leviyanx.github.io/"  # default target URL
-    time_interval = 15  # default time interval to detect changes
-
-    def __init__(self, monitor_settings_file):
-        target_url, time_interval = self.get_monitor_settings(monitor_settings_file)
-        self.url = target_url
-        self.time_interval = time_interval
+    def __init__(self):
+        # default monitor settings
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/39.0.2171.95 Safari/537.36'}  # act like a browser
 
     @staticmethod
     def get_monitor_settings(monitor_settings_file):
@@ -33,20 +28,24 @@ class WebsiteMonitor:
 
             return monitor_info['targetUrl'], monitor_info['intervalToDetect']
 
-    def monitor_one_webpage_and_notify(self, sender_settings_file, receiver_settings_file):
+    def monitor_one_webpage_and_notify(self, monitor_settings_file, sender_settings_file, receiver_settings_file):
         """Monitor changes in specified webpage and notify the receiver with changed content by email. \n
         Only load the email when needed, so that user don't need to restart the script when only email settings (sender
         and receiver) are changed.
 
-        :param sender_settings_file: file stores sender's settings
-        :param receiver_settings_file: file stores receiver's information
+        :param monitor_settings_file: file stores monitor settings (target URL and time interval)
+        :param sender_settings_file: file stores sender's settings (email address and password)
+        :param receiver_settings_file: file stores receiver's information (email address)
         """
         prev_version = ""
         first_run = True
         while True:
             try:
+                # Except the first time, every other time, after time interval the script will load the monitor settings again
+                target_url, time_interval = self.get_monitor_settings(monitor_settings_file)
+
                 # download the page
-                response = requests.get(self.url, headers=self.headers)
+                response = requests.get(target_url, headers=self.headers)
                 # parse the downloaded homepage
                 soup = BeautifulSoup(response.text, "lxml")
 
@@ -60,7 +59,7 @@ class WebsiteMonitor:
                     if first_run == True:
                         prev_version = soup
                         first_run = False
-                        print("Start Monitoring " + self.url + "" + str(datetime.now()))
+                        print("Start Monitoring " + target_url + "" + str(datetime.now()))
                     else:
                         print("Changes detected at: " + str(datetime.now()))
                         OldPage = prev_version.splitlines()
@@ -72,7 +71,7 @@ class WebsiteMonitor:
                         print(out_text)
                         email_util = EmailUtil(sender_settings_file)
                         receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
-                        subject = "Something new in your follow website" + self.url
+                        subject = "Something new in your follow website" + target_url
                         email_util.email_specified_receiver(subject, out_text, receiver_address)
 
                         OldPage = NewPage
@@ -84,15 +83,17 @@ class WebsiteMonitor:
                     print("No Changes " + str(datetime.now()))
 
                 # time interval to run compare
-                time.sleep(self.time_interval)
+                time.sleep(time_interval)
                 continue
 
             except Exception as e:
-                # email receiver with the error message
+                # notify receiver with the error message
                 email_util = EmailUtil(sender_settings_file)
                 receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                error_message = self.url + '\n' + e
+                target_url, _ = self.get_monitor_settings(monitor_settings_file)
+                error_message = target_url + '\n' + e
+
                 email_util.email_specified_receiver(subject, error_message, receiver_address)
 
                 # quit the program
@@ -105,5 +106,5 @@ sender_settings_file = 'sender-settings.json'
 receiver_settings_file = 'receiver-settings.json'
 
 # monitor
-monitor = WebsiteMonitor(monitor_settings_file)
-monitor.monitor_one_webpage_and_notify(sender_settings_file, receiver_settings_file)
+monitor = WebsiteMonitor()
+monitor.monitor_one_webpage_and_notify(monitor_settings_file, sender_settings_file, receiver_settings_file)
