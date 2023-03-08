@@ -56,4 +56,6 @@ python3 monitor.py
 
 ### TODO
 
-- [ ] Support more mail accounts
+- [ ] If target webpage is changed in `monitor-settings.json`, the script should take notice of it and respond to it.
+- [ ] Support multiple receivers
+- [ ] Support more mail accounts of receiver
