@@ -32,7 +32,7 @@ class EmailUtil:
 
             return receiver_info['mailReceiver']
 
-    def email_specified_user(self, subject, send_content, to_address):
+    def email_specified_receiver(self, subject, send_content, to_address):
         """email specified user the given message"""
 
         # ssl login

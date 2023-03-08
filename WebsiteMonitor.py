@@ -21,12 +21,17 @@ class WebsiteMonitor:
     time_interval = 15  # default time interval to detect changes
 
     def __init__(self, monitor_settings_file):
-        # read custom settings from monitor settings file
+        target_url, time_interval = self.get_monitor_settings(monitor_settings_file)
+        self.url = target_url
+        self.time_interval = time_interval
+
+    @staticmethod
+    def get_monitor_settings(monitor_settings_file):
+        """get monitor settings from json file"""
         with open(monitor_settings_file) as json_file:
             monitor_info = json.load(json_file)
 
-            self.url = monitor_info['targetUrl']
-            self.time_interval = monitor_info['intervalToDetect']
+            return monitor_info['targetUrl'], monitor_info['intervalToDetect']
 
     def monitor_one_webpage_and_notify(self, sender_settings_file, receiver_settings_file):
         """Monitor changes in specified webpage and notify the receiver with changed content by email
@@ -69,7 +74,7 @@ class WebsiteMonitor:
                         # print and email me the changes
                         print(out_text)
                         subject = "Something new in your follow website" + self.url
-                        email_util.email_specified_user(subject, out_text, receiver_address)
+                        email_util.email_specified_receiver(subject, out_text, receiver_address)
 
                         OldPage = NewPage
                         # print ('\n'.join(diff))
@@ -87,7 +92,7 @@ class WebsiteMonitor:
                 # email receiver the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
                 send_content = self.url + '\n' + e
-                email_util.email_specified_user(subject, send_content, receiver_address)
+                email_util.email_specified_receiver(subject, send_content, receiver_address)
 
                 # quit the program
                 break
