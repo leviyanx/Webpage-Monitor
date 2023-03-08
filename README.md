@@ -9,17 +9,13 @@
 
 Python@3.10
 
-Setting files
+Download the denpendencies with the following command:
 
-- receiver-settings.json
-- sender-settings.json
-- monitor-settings.json
+```bash
+pip3 install -r requirements.txt
+```
 
-##### receiver-settings.json
-
-This file is used to set receiver mail address.
-
-Example
+Create a `receiver-settings.json` file in the same directory as the script. The file should contain the following (replace the values with your own):
 
 ```json
 {
@@ -27,11 +23,7 @@ Example
 }
 ```
 
-##### sender-settings.json
-
-This file is used to set a mail account that sends mail to receiver.
-
-Example
+Create a `sender-settings.json` file in the same directory as the script. The file should contain the following (replace the values with your own):
 
 ```json
 {
@@ -40,11 +32,10 @@ Example
 }
 ```
 
-##### monitor-settings.json
+Create a `monitor-settings.json` file in the same directory as the script. The file should contain the following (replace the values with your own):
 
-This file is used to set webpage that you want to monitor.
-
-Example
+- `targetUrl`: the url of the webpage you want to monitor
+- `intervalToDetect`: the interval to detect the change of the webpage, in `seconds`
 
 ```json
 {
@@ -55,7 +46,9 @@ Example
 
 ### Usage
 
-`todo`:
-1. prepare three files
-2. run the script
+After the settings are done, run the script with the following command:
+
+```bash
+python3 monitor.py
+```
 
