@@ -1,13 +1,12 @@
 
 # Webpage Monitor
 
-
 ### Features
 
 - You can monitor the specified webpage, if the webpage is updated, send a notification to the specified email address. The notification email contains the changes.
 - You can specify the interval of monitoring.
 - You can set sender and receiver of the notification email.
-- You can do not restart the script after only changing email settings (either sender or receiver).
+- You **don't need to restart** the script **after changing** the settings in any setting file. (i.e. Once your change settings in the setting file, the script will automatically apply the settings.)
 
 ### Example
 
@@ -44,7 +43,7 @@ Create a `sender-settings.json` file in the same directory as the script. The fi
 }
 ```
 
-Tip: The sender mail **must** be a **qq mail** or **foxmail**, and you can get password de. you can get password depend on the rules that qq mail official website provides. (Maybe support other mail accounts in the future.)
+**WARNING**: The sender mail **must** be a **qq mail** or **foxmail**, and you can get password de. you can get password depend on the rules that qq mail official website provides. (Maybe support other mail accounts in the future.)
 
 Create a `monitor-settings.json` file in the same directory as the script. The file should contain the following (replace the values with your own):
 
@@ -58,7 +57,11 @@ Create a `monitor-settings.json` file in the same directory as the script. The f
 }
 ```
 
-Or you can run the script to generate settings files above (But it's **not** recommended to do so when you **first** use the script, because there are some essential messages you need to read):
+TIP: It's recommended that set the interval to detect to be a little long. For example, 1800 seconds (30 minutes), 3600 seconds (1 hour), 86400 (1 day). Because the script will send a notification email to you if the webpage is updated. If you set the interval to be too short, you will receive too many emails.
+
+---
+
+You can also run the script to generate settings files above (But it's **not** recommended to do so when you **first** use the script, because there are some essential messages you need to read):
 
 ```bash
 bash init.sh
@@ -93,11 +96,10 @@ And you can kill the script with the following command:
 kill -9 <PID>
 ```
 
-If you want to **change target webpage**, you can change the `targetUrl` in `monitor-settings.json` and restart the script. 
-But when **only email settings are changed** (either sender or receiver), you **don't** need to restart the script.
+If you want to change settings (either url or email settings...), enjoy your freedom to change the settings in the corresponding setting files and go ahead do your work. The script will automatically apply the settings without restarting. 
 
 ### TODO
 
-- [ ] If target webpage is changed in `monitor-settings.json`, the script should take notice of it and respond to it.
+- [x] If target webpage is changed in `monitor-settings.json`, the script should take notice of it and apply it.
 - [ ] Support multiple receivers
 - [ ] Support more mail accounts of receiver
