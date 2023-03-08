@@ -1,3 +1,10 @@
+
+v1.0.1
+
+features:
+
+- You can do not restart the script after only changing email settings (either sender or receiver).
+
 v1.0.0
 
 In this release, include the following features:

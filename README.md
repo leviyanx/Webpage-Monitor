@@ -4,9 +4,10 @@
 
 ### Features
 
-- Monitor the specified webpage, if the webpage is updated, send a notification to the specified email address. In the notification email, the content of changes in the webpage is included.
+- You can monitor the specified webpage, if the webpage is updated, send a notification to the specified email address. The notification email contains the changes.
 - You can specify the interval of monitoring.
 - You can set sender and receiver of the notification email.
+- You can do not restart the script after only changing email settings (either sender or receiver).
 
 ### Example
 
@@ -92,7 +93,8 @@ And you can kill the script with the following command:
 kill -9 <PID>
 ```
 
-If you want to **change target webpage**, you can change the `targetUrl` in `monitor-settings.json` and restart the script.
+If you want to **change target webpage**, you can change the `targetUrl` in `monitor-settings.json` and restart the script. 
+But when **only email settings are changed** (either sender or receiver), you **don't** need to restart the script.
 
 ### TODO
 

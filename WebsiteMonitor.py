@@ -34,13 +34,13 @@ class WebsiteMonitor:
             return monitor_info['targetUrl'], monitor_info['intervalToDetect']
 
     def monitor_one_webpage_and_notify(self, sender_settings_file, receiver_settings_file):
-        """Monitor changes in specified webpage and notify the receiver with changed content by email
+        """Monitor changes in specified webpage and notify the receiver with changed content by email. \n
+        Only load the email when needed, so that user don't need to restart the script when only email settings (sender
+        and receiver) are changed.
 
         :param sender_settings_file: file stores sender's settings
         :param receiver_settings_file: file stores receiver's information
         """
-        email_util = EmailUtil(sender_settings_file)
-        receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
         prev_version = ""
         first_run = True
         while True:
@@ -65,14 +65,13 @@ class WebsiteMonitor:
                         print("Changes detected at: " + str(datetime.now()))
                         OldPage = prev_version.splitlines()
                         NewPage = soup.splitlines()
-                        # compare versions and highlight changes using difflib
-                        # d = difflib.Differ()
-                        # diff = d.compare(OldPage, NewPage)
                         diff = difflib.context_diff(OldPage, NewPage, n=10)
                         out_text = "\n".join([ll.rstrip() for ll in '\n'.join(diff).splitlines() if ll.strip()])
 
                         # print and email me the changes
                         print(out_text)
+                        email_util = EmailUtil(sender_settings_file)
+                        receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
                         subject = "Something new in your follow website" + self.url
                         email_util.email_specified_receiver(subject, out_text, receiver_address)
 
@@ -89,10 +88,12 @@ class WebsiteMonitor:
                 continue
 
             except Exception as e:
-                # email receiver the error message
+                # email receiver with the error message
+                email_util = EmailUtil(sender_settings_file)
+                receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                send_content = self.url + '\n' + e
-                email_util.email_specified_receiver(subject, send_content, receiver_address)
+                error_message = self.url + '\n' + e
+                email_util.email_specified_receiver(subject, error_message, receiver_address)
 
                 # quit the program
                 break
