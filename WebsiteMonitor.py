@@ -17,11 +17,7 @@ class WebsiteMonitor:
     url = "https://leviyanx.github.io/"  # default target URL
     time_interval = 15  # default time interval to detect changes
 
-    # email settings
-    sender_settings_file = ""
-    receiver_settings_file = ""
-
-    def __init__(self, monitor_settings_file, sender_settings_file, receiver_settings_file):
+    def __init__(self, monitor_settings_file):
         # read custom settings from monitor settings file
         with open(monitor_settings_file) as json_file:
             monitor_info = json.load(json_file)
@@ -29,12 +25,13 @@ class WebsiteMonitor:
             self.url = monitor_info['targetUrl']
             self.time_interval = monitor_info['intervalToDetect']
 
-        self.sender_settings_file = sender_settings_file
-        self.receiver_settings_file = receiver_settings_file
+    def monitor_one_webpage_and_notify(self, sender_settings_file, receiver_settings_file):
+        """Monitor changes in specified webpage and notify the receiver with changed content by email
 
-    def monitor_one_website(self):
-        """monitor changes in website and show us what changed and email me the change"""
-        emailUtil = EmailUtil(self.sender_settings_file, self.receiver_settings_file)
+        :param sender_settings_file: file stores sender's settings
+        :param receiver_settings_file: file stores receiver's information
+        """
+        emailUtil = EmailUtil(sender_settings_file, receiver_settings_file)
         PrevVersion = ""
         FirstRun = True
         while True:
@@ -98,5 +95,5 @@ sender_settings_file = 'sender-settings.json'
 receiver_settings_file = 'receiver-settings.json'
 
 # monitor
-monitor = WebsiteMonitor(monitor_settings_file, sender_settings_file, receiver_settings_file)
-monitor.monitor_one_website()
+monitor = WebsiteMonitor(monitor_settings_file)
+monitor.monitor_one_webpage_and_notify(sender_settings_file, receiver_settings_file)
