@@ -1,9 +1,16 @@
 
 # Webpage Monitor
 
+
+### Features
+
+- Monitor the specified webpage, if the webpage is updated, send a notification to the specified email address. In the notification email, the content of changes in the webpage is included.
+- You can specify the interval of monitoring.
+- You can set sender and receiver of the notification email.
+
 ### Example
 
-`todo`: show a example picture
+- [ ] show a example picture
 
 ### Requirement
 
