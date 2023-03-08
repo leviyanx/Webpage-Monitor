@@ -1,4 +1,10 @@
 
+v2.0.0
+
+features:
+
+- You don't need to restart the script after changing the settings in every setting file. (i.e. Once your change settings in the setting file, the script will automatically apply the settings.)
+
 v1.0.1
 
 features:
