@@ -64,6 +64,27 @@ After the settings are done, run the script with the following command:
 python3 WebpageMonitor.py
 ```
 
+If you want to run the script in the **background** (in server), you can use `nohup`:
+
+```bash
+nohup python3 WebpageMonitor.py &
+```
+
+View the running status of the script:
+
+```bash
+ps aux | grep WebpageMonitor.py
+
+# output example:
+# USER PID ...  18:10   0:00 python3 WebsiteMonitor.py
+```
+
+And you can kill the script with the following command:
+
+```bash
+kill -9 <PID>
+```
+
 If you want to **change target webpage**, you can change the `targetUrl` in `monitor-settings.json` and restart the script.
 
 ### TODO
