@@ -7,6 +7,8 @@
 
 ### Requirement
 
+#### Install Environment and Dependencies
+
 Python@3.10
 
 Download the denpendencies with the following command:
@@ -14,6 +16,8 @@ Download the denpendencies with the following command:
 ```bash
 pip3 install -r requirements.txt
 ```
+
+#### Setup Settings
 
 Create a `receiver-settings.json` file in the same directory as the script. The file should contain the following (replace the values with your own):
 
@@ -46,13 +50,21 @@ Create a `monitor-settings.json` file in the same directory as the script. The f
 }
 ```
 
+Or you can run the script to generate settings files above (But it's **not** recommended to do so when you **first** use the script, because there are some essential messages you need to read):
+
+```bash
+bash init.sh
+```
+
 ### Usage
 
 After the settings are done, run the script with the following command:
 
 ```bash
-python3 monitor.py
+python3 WebpageMonitor.py
 ```
+
+If you want to **change target webpage**, you can change the `targetUrl` in `monitor-settings.json` and restart the script.
 
 ### TODO
 
