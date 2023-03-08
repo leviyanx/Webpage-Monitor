@@ -7,5 +7,5 @@ monitor-settings.json
 website-monitor.ipynb
 
 .DS_Store
-
+.idea
 __pycache__
