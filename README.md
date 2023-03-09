@@ -98,9 +98,17 @@ kill -9 <PID>
 
 If you want to change settings (either url or email settings...), enjoy your freedom to change the settings in the corresponding setting files and go ahead do your work. The script will automatically apply the settings without restarting. 
 
+### Goal
+
+The ultimate goal of this script is supporting that one person or a group of people monitor the same webpage(s). So, this script suits for:
+
+- One person want to monitor multiple webpages at the same time.
+- A group of people who have the same interests want to monitor the same webpage(s).
+
+![img.png](images/goal.png)
+
 ### TODO
 
 - [x] If target webpage is changed in `monitor-settings.json`, the script should take notice of it and apply it.
 - [ ] Support monitor multiple webpages at the same time
-- [ ] Support multiple receivers
-- [ ] Support more mail accounts of receiver
+- [ ] Support more mail accounts of sender
