@@ -101,5 +101,6 @@ If you want to change settings (either url or email settings...), enjoy your fre
 ### TODO
 
 - [x] If target webpage is changed in `monitor-settings.json`, the script should take notice of it and apply it.
+- [ ] Support monitor multiple webpages at the same time
 - [ ] Support multiple receivers
 - [ ] Support more mail accounts of receiver
