@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import difflib
 import time
-from datetime import datetime
 import json
 from EmailUtil import EmailUtil
 import logging
@@ -26,10 +25,10 @@ class WebsiteMonitor:
                           'Chrome/39.0.2171.95 Safari/537.36'}  # act like a browser
         self.exit_flag = False  # flag to exit the monitor thread
 
-    def monitor_multiple_webpages_and_notify(self, monitor_settings_file, sender_settings_file, receiver_settings_file):
+    def monitor_multiple_webpages_and_notify(self, monitor_settings_file: str, sender_settings_file: str, receiver_settings_file: str):
         """
         Monitor changes in multiple webpages and notify the receiver with changed content by email. \n
-        Automatically reload monitor settings in every one and half hour. \n
+        Automatically reload monitor settings in every 90 minutes. \n
 
         :param monitor_settings_file: file stores monitor settings of webpages
         :param sender_settings_file: file stores sender's settings (email address and password)
@@ -74,7 +73,7 @@ class WebsiteMonitor:
                 # quit the program
                 break
 
-    def monitor_one_webpage_and_notify(self, target_url, time_interval, sender_settings_file, receiver_settings_file):
+    def monitor_one_webpage_and_notify(self, target_url: str, time_interval: int, sender_settings_file: str, receiver_settings_file: str):
         """Monitor changes in one specified webpage and notify the receiver with changed content by email. \n
         Only load the email when needed, so that user don't need to restart the script when only email settings (sender
         and receiver) are changed.
@@ -127,13 +126,13 @@ class WebsiteMonitor:
                 break
 
     @staticmethod
-    def get_monitor_settings_of_webpages(monitor_settings_file):
+    def get_monitor_settings_of_webpages(monitor_settings_file: str):
         """get monitor settings of webpages from json file"""
         with open(monitor_settings_file) as json_file:
             monitor_settings = json.load(json_file)
             return monitor_settings
 
-    def get_target_page_text(self, target_url):
+    def get_target_page_text(self, target_url: str):
         """get the text of the target webpage"""
         # download the page
         response = requests.get(target_url, headers=self.headers)
@@ -148,7 +147,7 @@ class WebsiteMonitor:
         return soup.get_text()
 
     @staticmethod
-    def notify(sender_settings_file, receiver_settings_file, subject, content):
+    def notify(sender_settings_file: str, receiver_settings_file: str, subject: str, content: str):
         """notify receiver with the given message (using sender's email address)
 
         :param sender_settings_file: file stores sender's settings (email address and password)

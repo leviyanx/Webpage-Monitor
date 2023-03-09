@@ -11,13 +11,13 @@ class EmailUtil:
     Attributes: only one attribute, the sender email address and password
     """
 
-    def __init__(self, sender_settings_file):
+    def __init__(self, sender_settings_file: str):
         from_address, from_address_passwd = self.get_sender_settings(sender_settings_file)
         self.from_address = from_address
         self.from_address_pwd = from_address_passwd
 
     @staticmethod
-    def get_sender_settings(sender_settings_file):
+    def get_sender_settings(sender_settings_file: str):
         """get sender email address and password from json file"""
         with open(sender_settings_file) as json_file:
             sender_info = json.load(json_file)
@@ -25,14 +25,14 @@ class EmailUtil:
             return sender_info['mailSender'], sender_info['mailSenderPassword']
 
     @staticmethod
-    def get_receiver_email(receiver_settings_file):
+    def get_receiver_email(receiver_settings_file: str):
         """get receiver email address from json file"""
         with open(receiver_settings_file) as json_file:
             receiver_info = json.load(json_file)
 
             return receiver_info['mailReceiver']
 
-    def email_specified_receiver(self, subject, send_content, to_address):
+    def email_specified_receiver(self, subject: str, send_content: str, to_address):
         """email specified user the given message"""
 
         # ssl login
