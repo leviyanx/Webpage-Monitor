@@ -8,7 +8,7 @@ The goal of this script is supporting that one person or a group of people monit
 - One person want to monitor multiple webpages at the same time.
 - A group of people who have the same interests want to monitor the same webpage(s).
 
-![img.png](images/goal.png)
+![goal_effect](images/goal.png)
 
 ### Features
 
@@ -17,7 +17,7 @@ The goal of this script is supporting that one person or a group of people monit
 - If the webpages' contents are updated, receiver will get **a notification email**. The notification email contains the changes.
 - You can set **sender and receivers** of the notification email.
 - You **don't need to restart the script after changing the settings** in any setting file, the running script will automatically apply the new settings.
-- You can view logs in `execution.log` file.
+- You can view logs in `execution.log` file when the script is running.
 
 ### Requirement
 
@@ -105,6 +105,10 @@ ps aux | grep monitor.py
 # output example:
 # USER PID ...  18:10   0:00 python3 WebsiteMonitor.py
 ```
+
+If you receive the warning email that there are something wrong in monitor, you can view the logs in `execution.log` file.
+
+![log.png](images/log.png)
 
 And you can kill the script with the following command:
 
