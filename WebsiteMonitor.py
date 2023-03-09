@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import threading
 import requests
 from bs4 import BeautifulSoup
 import difflib
@@ -19,34 +20,78 @@ class WebsiteMonitor:
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/39.0.2171.95 Safari/537.36'}  # act like a browser
+        self.exit_flag = False  # flag to exit the monitor thread
 
-    def monitor_one_webpage_and_notify(self, monitor_settings_file, sender_settings_file, receiver_settings_file):
-        """Monitor changes in specified webpage and notify the receiver with changed content by email. \n
+    def monitor_multiple_webpages_and_notify(self, monitor_settings_file, sender_settings_file, receiver_settings_file):
+        """
+        Monitor changes in multiple webpages and notify the receiver with changed content by email. \n
+        Automatically reload monitor settings in every one and half hour. \n
+
+        :param monitor_settings_file: file stores monitor settings of webpages
+        :param sender_settings_file: file stores sender's settings (email address and password)
+        :param receiver_settings_file: file stores receiver's information (email address)
+        """
+        threads = []
+        self.exit_flag = False
+        while True:
+            try:
+                # get the monitor settings of webpages
+                webpages = self.get_monitor_settings_of_webpages(monitor_settings_file)['webpages']
+
+                # start monitor every webpage
+                for webpage in webpages:
+                    # one thread for one webpage
+                    thread = threading.Thread(target=self.monitor_one_webpage_and_notify, args=(
+                    webpage['targetUrl'], webpage['intervalToDetect'], sender_settings_file, receiver_settings_file))
+                    threads.append(thread)
+                # start all threads
+                for thread in threads:
+                    thread.start()
+
+                # wait for one hour
+                time.sleep(3600)
+                # It's time to exit all monitor threads
+                self.exit_flag = True
+                for thread in threads:
+                    thread.join()
+
+                # reset the exit flag and start a new round of monitor
+                self.exit_flag = False
+
+            except Exception as e:
+                # notify receiver with the error message
+                subject = "SOMETHING WRONG IN YOUR MONITOR!"
+                error_message = "Error in monitor multiple webpages: " + e
+                self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
+
+                # quit the program
+                break
+
+    def monitor_one_webpage_and_notify(self, target_url, time_interval, sender_settings_file, receiver_settings_file):
+        """Monitor changes in one specified webpage and notify the receiver with changed content by email. \n
         Only load the email when needed, so that user don't need to restart the script when only email settings (sender
         and receiver) are changed.
 
-        :param monitor_settings_file: file stores monitor settings (target URL and time interval)
+        :param target_url: url of the target webpage
+        :param time_interval: time interval to monitor
         :param sender_settings_file: file stores sender's settings (email address and password)
         :param receiver_settings_file: file stores receiver's information (email address)
         """
         prev_page_content = ""
         first_run = True
-        while True:
+        while not self.exit_flag:
             try:
-                # Except the first time, every other time, after time interval the script will load the monitor settings again
-                target_url, time_interval = self.get_monitor_settings(monitor_settings_file)
-
                 current_page_content = self.get_target_page_text(target_url)
 
                 # compare the current page text to the previous
                 if prev_page_content != current_page_content:
-                    if first_run == True:
+                    if first_run:
                         # on the first run - just memorize the page
                         prev_page_content = current_page_content
                         first_run = False
-                        print("Start Monitoring " + target_url + "" + str(datetime.now()))
+                        print("Start Monitoring " + target_url + "" + str(datetime.now()) + "\n")
                     else:
-                        print("Changes detected at: " + str(datetime.now()))
+                        print("Changes detected at: " + str(datetime.now()) + "\n")
                         OldPage = prev_page_content.splitlines()
                         NewPage = current_page_content.splitlines()
                         diff = difflib.context_diff(OldPage, NewPage, n=10)
@@ -64,7 +109,7 @@ class WebsiteMonitor:
 
                 # this is used for testing
                 else:
-                    print("No Changes " + str(datetime.now()))
+                    print("No Changes " + str(datetime.now()) + "\n")
 
                 # time interval to run compare
                 time.sleep(time_interval)
@@ -73,7 +118,6 @@ class WebsiteMonitor:
             except Exception as e:
                 # notify receiver with the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                target_url, _ = self.get_monitor_settings(monitor_settings_file)
                 error_message = target_url + '\n' + e
                 self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
 
@@ -81,12 +125,11 @@ class WebsiteMonitor:
                 break
 
     @staticmethod
-    def get_monitor_settings(monitor_settings_file):
-        """get monitor settings from json file"""
+    def get_monitor_settings_of_webpages(monitor_settings_file):
+        """get monitor settings of webpages from json file"""
         with open(monitor_settings_file) as json_file:
-            monitor_info = json.load(json_file)
-
-            return monitor_info['targetUrl'], monitor_info['intervalToDetect']
+            monitor_settings = json.load(json_file)
+            return monitor_settings
 
     def get_target_page_text(self, target_url):
         """get the text of the target webpage"""
@@ -114,13 +157,3 @@ class WebsiteMonitor:
         email_util = EmailUtil(sender_settings_file)
         receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
         email_util.email_specified_receiver(subject, content, receiver_address)
-
-
-# load file in local machine
-monitor_settings_file = 'monitor-settings.json'
-sender_settings_file = 'sender-settings.json'
-receiver_settings_file = 'receiver-settings.json'
-
-# monitor
-monitor = WebsiteMonitor()
-monitor.monitor_one_webpage_and_notify(monitor_settings_file, sender_settings_file, receiver_settings_file)
