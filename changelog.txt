@@ -1,3 +1,13 @@
+v3.0.0
+
+features:
+
+- You can monitor multiple webpages at the same time.
+
+refactor:
+
+- put the logic that get target page content into one function
+- put the logic that init email util instance and get receiver email in a function
 
 v2.0.0
 
