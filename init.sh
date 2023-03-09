@@ -6,4 +6,4 @@ echo "{ \"mailReceiver\": \"<receiver@mail.com>\" }" > receiver-settings.json
 
 echo "{ \"mailSender\": \"<sender@qq.com/foxmail.com>\", \"mailSenderPassword\": \"<password>\" }" > sender-settings.json
 
-echo "{ \"targetUrl\": \"<http://example.com/url-of-target-webpage>\", \"intervalToDetect\": 1800 }" > monitor-settings.json
+echo "{ \"webpages\" : [ { \"targetUrl\" : \"<url1>\", \"intervalToDetect\" : 1800 }, { \"targetUrl\" : \"<url2>\", \"intervalToDetect\" : 1800 } ] }" > monitor-settings.json

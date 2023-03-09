@@ -47,15 +47,24 @@ Create a `sender-settings.json` file in the same directory as the script. The fi
 
 Create a `monitor-settings.json` file in the same directory as the script. The file should contain the following (replace the values with your own):
 
-- `targetUrl`: the url of the webpage you want to monitor
-- `intervalToDetect`: the interval to detect the change of the webpage, in `seconds`
-
 ```json
 {
-    "targetUrl": "<http://example.com/url-of-target-webpage>",
-    "intervalToDetect": 1800
+    "webpages": [
+        {
+            "targetUrl" : "<url1>",
+            "intervalToDetect" : 1800
+        },
+        {
+            "targetUrl" : "<url2>",
+            "intervalToDetect" : 1800
+        }
+    ]
 }
 ```
+
+- `webpages`: the list of webpages you want to monitor
+- `targetUrl`: the url of the webpage you want to monitor
+- `intervalToDetect`: the interval to detect the change of the webpage, in `seconds`
 
 TIP: It's recommended that set the interval to detect to be a little long. For example, 1800 seconds (30 minutes), 3600 seconds (1 hour), 86400 (1 day). Because the script will send a notification email to you if the webpage is updated. If you set the interval to be too short, you will receive too many emails.
 
