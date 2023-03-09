@@ -29,33 +29,26 @@ class WebsiteMonitor:
         :param sender_settings_file: file stores sender's settings (email address and password)
         :param receiver_settings_file: file stores receiver's information (email address)
         """
-        prev_version = ""
+        prev_page_content = ""
         first_run = True
         while True:
             try:
                 # Except the first time, every other time, after time interval the script will load the monitor settings again
                 target_url, time_interval = self.get_monitor_settings(monitor_settings_file)
 
-                # download the page
-                response = requests.get(target_url, headers=self.headers)
-                # parse the downloaded homepage
-                soup = BeautifulSoup(response.text, "lxml")
+                current_page_content = self.get_target_page_text(target_url)
 
-                # remove all scripts and styles
-                for script in soup(["script", "style"]):
-                    script.extract()
-                soup = soup.get_text()
-                # compare the page text to the previous version
-                if prev_version != soup:
-                    # on the first run - just memorize the page
+                # compare the current page text to the previous
+                if prev_page_content != current_page_content:
                     if first_run == True:
-                        prev_version = soup
+                        # on the first run - just memorize the page
+                        prev_page_content = current_page_content
                         first_run = False
                         print("Start Monitoring " + target_url + "" + str(datetime.now()))
                     else:
                         print("Changes detected at: " + str(datetime.now()))
-                        OldPage = prev_version.splitlines()
-                        NewPage = soup.splitlines()
+                        OldPage = prev_page_content.splitlines()
+                        NewPage = current_page_content.splitlines()
                         diff = difflib.context_diff(OldPage, NewPage, n=10)
                         out_text = "\n".join([ll.rstrip() for ll in '\n'.join(diff).splitlines() if ll.strip()])
 
@@ -67,7 +60,7 @@ class WebsiteMonitor:
 
                         OldPage = NewPage
                         # print ('\n'.join(diff))
-                        prev_version = soup
+                        prev_page_content = current_page_content
 
                 # this is used for testing
                 else:
@@ -94,6 +87,20 @@ class WebsiteMonitor:
             monitor_info = json.load(json_file)
 
             return monitor_info['targetUrl'], monitor_info['intervalToDetect']
+
+    def get_target_page_text(self, target_url):
+        """get the text of the target webpage"""
+        # download the page
+        response = requests.get(target_url, headers=self.headers)
+
+        # parse the downloaded homepage
+        soup = BeautifulSoup(response.text, "lxml")
+
+        # remove all scripts and styles
+        for script in soup(["script", "style"]):
+            script.extract()
+
+        return soup.get_text()
 
     @staticmethod
     def notify(sender_settings_file, receiver_settings_file, subject, content):
