@@ -9,7 +9,7 @@ from EmailUtil import EmailUtil
 
 
 class WebsiteMonitor:
-    """ This class is used to monitor changes in a website
+    """ This class is used to monitor changes in a website and notify the changes by email.
 
     Attributes: only one attribute, the headers to act like a browser
     """
@@ -19,14 +19,6 @@ class WebsiteMonitor:
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/39.0.2171.95 Safari/537.36'}  # act like a browser
-
-    @staticmethod
-    def get_monitor_settings(monitor_settings_file):
-        """get monitor settings from json file"""
-        with open(monitor_settings_file) as json_file:
-            monitor_info = json.load(json_file)
-
-            return monitor_info['targetUrl'], monitor_info['intervalToDetect']
 
     def monitor_one_webpage_and_notify(self, monitor_settings_file, sender_settings_file, receiver_settings_file):
         """Monitor changes in specified webpage and notify the receiver with changed content by email. \n
@@ -67,12 +59,11 @@ class WebsiteMonitor:
                         diff = difflib.context_diff(OldPage, NewPage, n=10)
                         out_text = "\n".join([ll.rstrip() for ll in '\n'.join(diff).splitlines() if ll.strip()])
 
-                        # print and email me the changes
+                        # print the changes
                         print(out_text)
-                        email_util = EmailUtil(sender_settings_file)
-                        receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
+                        # notify receiver with the changes
                         subject = "Something new in your follow website" + target_url
-                        email_util.email_specified_receiver(subject, out_text, receiver_address)
+                        self.notify(sender_settings_file, receiver_settings_file, subject, out_text)
 
                         OldPage = NewPage
                         # print ('\n'.join(diff))
@@ -88,16 +79,34 @@ class WebsiteMonitor:
 
             except Exception as e:
                 # notify receiver with the error message
-                email_util = EmailUtil(sender_settings_file)
-                receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
                 target_url, _ = self.get_monitor_settings(monitor_settings_file)
                 error_message = target_url + '\n' + e
-
-                email_util.email_specified_receiver(subject, error_message, receiver_address)
+                self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
 
                 # quit the program
                 break
+
+    @staticmethod
+    def get_monitor_settings(monitor_settings_file):
+        """get monitor settings from json file"""
+        with open(monitor_settings_file) as json_file:
+            monitor_info = json.load(json_file)
+
+            return monitor_info['targetUrl'], monitor_info['intervalToDetect']
+
+    @staticmethod
+    def notify(sender_settings_file, receiver_settings_file, subject, content):
+        """notify receiver with the given message (using sender's email address)
+
+        :param sender_settings_file: file stores sender's settings (email address and password)
+        :param receiver_settings_file: file stores receiver's information (email address)
+        :param subject: subject of the email
+        :param content: content of the email
+        """
+        email_util = EmailUtil(sender_settings_file)
+        receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
+        email_util.email_specified_receiver(subject, content, receiver_address)
 
 
 # load file in local machine
