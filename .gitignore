@@ -9,3 +9,9 @@ website-monitor.ipynb
 .DS_Store
 .idea
 __pycache__
+
+# log
+execution.log
+
+# test
+test.py

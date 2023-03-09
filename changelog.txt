@@ -3,6 +3,7 @@ v3.0.0
 features:
 
 - You can monitor multiple webpages at the same time.
+- You can view logs in execution.log file.
 
 refactor:
 

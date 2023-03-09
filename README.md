@@ -17,6 +17,7 @@ The goal of this script is supporting that one person or a group of people monit
 - If the webpages' contents are updated, receiver will get **a notification email**. The notification email contains the changes.
 - You can set **sender and receivers** of the notification email.
 - You **don't need to restart the script after changing the settings** in any setting file, the running script will automatically apply the new settings.
+- You can view logs in `execution.log` file.
 
 ### Requirement
 

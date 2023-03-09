@@ -7,6 +7,10 @@ import time
 from datetime import datetime
 import json
 from EmailUtil import EmailUtil
+import logging
+
+logging.basicConfig(filename="execution.log", encoding="utf-8",
+                    level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
 
 class WebsiteMonitor:
@@ -42,7 +46,8 @@ class WebsiteMonitor:
                 for webpage in webpages:
                     # one thread for one webpage
                     thread = threading.Thread(target=self.monitor_one_webpage_and_notify, args=(
-                    webpage['targetUrl'], webpage['intervalToDetect'], sender_settings_file, receiver_settings_file))
+                        webpage['targetUrl'], webpage['intervalToDetect'], sender_settings_file,
+                        receiver_settings_file))
                     threads.append(thread)
                 # start all threads
                 for thread in threads:
@@ -59,9 +64,11 @@ class WebsiteMonitor:
                 self.exit_flag = False
 
             except Exception as e:
+                error_message = "Error in monitor multiple webpages"
+                logging.error(error_message)
+                logging.exception(e)
                 # notify receiver with the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                error_message = "Error in monitor multiple webpages: " + e
                 self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
 
                 # quit the program
@@ -89,36 +96,31 @@ class WebsiteMonitor:
                         # on the first run - just memorize the page
                         prev_page_content = current_page_content
                         first_run = False
-                        print("Start Monitoring " + target_url + "" + str(datetime.now()) + "\n")
+                        logging.info("Start Monitoring " + target_url)
                     else:
-                        print("Changes detected at: " + str(datetime.now()) + "\n")
+                        logging.info("Changes detected at " + target_url)
                         OldPage = prev_page_content.splitlines()
                         NewPage = current_page_content.splitlines()
                         diff = difflib.context_diff(OldPage, NewPage, n=10)
                         out_text = "\n".join([ll.rstrip() for ll in '\n'.join(diff).splitlines() if ll.strip()])
 
-                        # print the changes
-                        print(out_text)
+                        logging.info("Notifying")
                         # notify receiver with the changes
                         subject = "Something new in your follow website" + target_url
                         self.notify(sender_settings_file, receiver_settings_file, subject, out_text)
 
-                        OldPage = NewPage
-                        # print ('\n'.join(diff))
                         prev_page_content = current_page_content
-
-                # this is used for testing
-                else:
-                    print("No Changes " + str(datetime.now()) + "\n")
 
                 # time interval to run compare
                 time.sleep(time_interval)
                 continue
 
             except Exception as e:
+                error_message = "Error in monitoring the webpage: " + target_url
+                logging.error(error_message)
+                logging.exception(e)
                 # notify receiver with the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                error_message = target_url + '\n' + e
                 self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
 
                 # quit the program
