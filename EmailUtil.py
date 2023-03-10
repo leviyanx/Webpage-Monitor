@@ -5,35 +5,47 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
-class EmailUtil:
-    """email util class
+def notify(sender_settings_file: str, receiver_settings_file: str, subject: str, content: str):
+    """notify receiver with the given message (using sender's email address)
 
-    Attributes: only one attribute, the sender email address and password
+    :param sender_settings_file: file stores sender's settings (email address and password)
+    :param receiver_settings_file: file stores receiver's information (email address)
+    :param subject: subject of the email
+    :param content: content of the email
     """
+    email_util = EmailUtil(sender_settings_file)
+    email_util.email_specified_receiver(receiver_settings_file, subject, content)
+
+
+class EmailUtil:
+    """email util class, take responsibility of sending email
+
+    """
+    from_address = None
+    from_address_pwd = None
+    receivers = None
 
     def __init__(self, sender_settings_file: str):
-        from_address, from_address_passwd = self.get_sender_settings(sender_settings_file)
-        self.from_address = from_address
-        self.from_address_pwd = from_address_passwd
+        # initialize sender
+        self.set_sender_settings(sender_settings_file)
 
-    @staticmethod
-    def get_sender_settings(sender_settings_file: str):
-        """get sender email address and password from json file"""
+    def set_sender_settings(self, sender_settings_file: str):
+        """set sender settings from json file"""
         with open(sender_settings_file) as json_file:
             sender_info = json.load(json_file)
 
-            return sender_info['mailSender'], sender_info['mailSenderPassword']
+            self.from_address = sender_info['mailSender']
+            self.from_address_pwd = sender_info['mailSenderPassword']
 
-    @staticmethod
-    def get_receiver_email(receiver_settings_file: str):
+    def get_receiver_email_address(self, receiver_settings_file: str):
         """get receiver email address from json file"""
         with open(receiver_settings_file) as json_file:
             receiver_info = json.load(json_file)
 
-            return receiver_info['mailReceiver']
+            self.receivers = receiver_info['receivers']
 
-    def email_specified_receiver(self, subject: str, send_content: str, to_address):
-        """email specified user the given message"""
+    def email_specified_receiver(self, address_file: str, subject: str, send_content: str):
+        """Email specified users the given message"""
 
         # ssl login
         host_server = 'smtp.qq.com'  # email use qq mail
@@ -47,6 +59,8 @@ class EmailUtil:
         msg = EmailMessage()
         msg = MIMEText(send_content, "plain", 'utf-8')
         msg['From'] = self.from_address
+        self.get_receiver_email_address(address_file)
+        to_address = ','.join(self.receivers)
         msg['To'] = to_address
         msg['Subject'] = Header(subject, 'utf-8')
 

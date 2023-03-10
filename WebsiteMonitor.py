@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import difflib
 import time
 import json
-from EmailUtil import EmailUtil
+import EmailUtil
 import logging
 
 logging.basicConfig(filename="execution.log", encoding="utf-8",
@@ -25,7 +25,8 @@ class WebsiteMonitor:
                           'Chrome/39.0.2171.95 Safari/537.36'}  # act like a browser
         self.exit_flag = False  # flag to exit the monitor thread
 
-    def monitor_multiple_webpages_and_notify(self, monitor_settings_file: str, sender_settings_file: str, receiver_settings_file: str):
+    def monitor_multiple_webpages_and_notify(self, monitor_settings_file: str, sender_settings_file: str,
+                                             receiver_settings_file: str):
         """
         Monitor changes in multiple webpages and notify the receiver with changed content by email. \n
         Automatically reload monitor settings in every 90 minutes. \n
@@ -68,12 +69,13 @@ class WebsiteMonitor:
                 logging.exception(e)
                 # notify receiver with the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
+                EmailUtil.notify(sender_settings_file, receiver_settings_file, subject, error_message)
 
                 # quit the program
                 break
 
-    def monitor_one_webpage_and_notify(self, target_url: str, time_interval: int, sender_settings_file: str, receiver_settings_file: str):
+    def monitor_one_webpage_and_notify(self, target_url: str, time_interval: int, sender_settings_file: str,
+                                       receiver_settings_file: str):
         """Monitor changes in one specified webpage and notify the receiver with changed content by email. \n
         Only load the email when needed, so that user don't need to restart the script when only email settings (sender
         and receiver) are changed.
@@ -106,7 +108,7 @@ class WebsiteMonitor:
                         logging.info("Notifying")
                         # notify receiver with the changes
                         subject = "Something new in your follow website" + target_url
-                        self.notify(sender_settings_file, receiver_settings_file, subject, out_text)
+                        EmailUtil.notify(sender_settings_file, receiver_settings_file, subject, out_text)
 
                         prev_page_content = current_page_content
 
@@ -120,7 +122,7 @@ class WebsiteMonitor:
                 logging.exception(e)
                 # notify receiver with the error message
                 subject = "SOMETHING WRONG IN YOUR MONITOR!"
-                self.notify(sender_settings_file, receiver_settings_file, subject, error_message)
+                EmailUtil.notify(sender_settings_file, receiver_settings_file, subject, error_message)
 
                 # quit the program
                 break
@@ -145,16 +147,3 @@ class WebsiteMonitor:
             script.extract()
 
         return soup.get_text()
-
-    @staticmethod
-    def notify(sender_settings_file: str, receiver_settings_file: str, subject: str, content: str):
-        """notify receiver with the given message (using sender's email address)
-
-        :param sender_settings_file: file stores sender's settings (email address and password)
-        :param receiver_settings_file: file stores receiver's information (email address)
-        :param subject: subject of the email
-        :param content: content of the email
-        """
-        email_util = EmailUtil(sender_settings_file)
-        receiver_address = EmailUtil.get_receiver_email(receiver_settings_file)
-        email_util.email_specified_receiver(subject, content, receiver_address)

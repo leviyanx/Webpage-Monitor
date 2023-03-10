@@ -1,14 +1,16 @@
 v3.0.0
 
-features:
+New features:
 
 - You can monitor multiple webpages at the same time.
+- Support multiple receivers.
 - You can view logs in execution.log file.
 
-refactor:
+Refactors:
 
 - put the logic that get target page content into one function
 - put the logic that init email util instance and get receiver email in a function
+- separate the notify function from the website monitor
 
 v2.0.0
 

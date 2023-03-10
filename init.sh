@@ -2,7 +2,7 @@
 
 # This script is used to generate the initial configuration files
 
-echo "{ \"mailReceiver\": \"<receiver@mail.com>\" }" > receiver-settings.json
+echo "{ \"receivers\": [ \"receiver1@exmaple.com\", \"receiver2@exmaple.com\", \"...\" ] }" > receiver-settings.json
 
 echo "{ \"mailSender\": \"<sender@qq.com/foxmail.com>\", \"mailSenderPassword\": \"<password>\" }" > sender-settings.json
 

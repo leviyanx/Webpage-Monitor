@@ -15,7 +15,7 @@ The goal of this script is supporting that one person or a group of people monit
 - You can monitor **multiple specified webpage** at the same time.
 - You can specify the **interval** of monitoring.
 - If the webpages' contents are updated, receiver will get **a notification email**. The notification email contains the changes.
-- You can set **sender and receivers** of the notification email.
+- You can set **sender and receiver(s)** of the notification email.
 - You **don't need to restart the script after changing the settings** in any setting file, the running script will automatically apply the new settings.
 - You can view logs in `execution.log` file when the script is running.
 
@@ -37,7 +37,11 @@ Create a `receiver-settings.json` file in the same directory as the script. The 
 
 ```json
 {
-    "mailReceiver": "<receiver@mail.com>"
+  "receivers": [
+      "receiver1@example.com",
+      "receiver2@example.com",
+      "..."
+  ]
 }
 ```
 
@@ -122,4 +126,5 @@ If you want to change settings (either monitor settings or email settings), enjo
 
 - [x] If target webpage is changed in `monitor-settings.json`, the script should take notice of it and apply it.
 - [x] Support monitor multiple webpages at the same time
+- [x] Support multiple receivers
 - [ ] Support more mail accounts of sender
