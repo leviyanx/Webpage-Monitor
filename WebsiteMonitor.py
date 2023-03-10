@@ -60,8 +60,9 @@ class WebsiteMonitor:
                 for thread in threads:
                     thread.join()
 
-                # reset the exit flag and start a new round of monitor
-                self.exit_flag = False
+                # start a new round of monitor
+                self.exit_flag = False  # reset the exit flag and
+                threads = []  # reset the threads list
 
             except Exception as e:
                 error_message = "Error in monitor multiple webpages"

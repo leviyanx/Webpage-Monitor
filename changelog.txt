@@ -6,6 +6,10 @@ New features:
 - Support multiple receivers.
 - You can view logs in execution.log file.
 
+Fixes:
+
+- Fix the bug that error in monitor multiple webpages, threads can only be started once [#2](https://github.com/leviyanx/Webpage-Monitor/issues/2)
+
 Refactors:
 
 - put the logic that get target page content into one function
